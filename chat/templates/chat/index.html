@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<h2>Enter Chat Room:</h2>
+<input type="text" id="room-name-input" placeholder="Enter chat room name" />
+<button id="room-name-submit">Enter</button>
+
+<h2>Chat Room:</h2>
+<div id="chat-log"></div>
+<input type="text" id="message-input" placeholder="Enter message" />
+<button id="send-message-button">Send</button>
+<button id="exit-chat-button">Exit Chat</button> <!-- Добавляем кнопку для выхода -->
+
+<h2>Ban User:</h2>
+<input type="text" id="ban-username-input" placeholder="Enter username to ban" />
+<button id="ban-user-button">Ban</button>
+
+<script>
+    let chatSocket;
+
+    // When the "Enter" button is clicked
+    $('#room-name-submit').click(function() {
+        const roomName = $('#room-name-input').val();
+
+        // Check if a WebSocket connection already exists
+        if (chatSocket) {
+            chatSocket.close();
+        }
+
+        // Create a new WebSocket connection
+        chatSocket = new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`);
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            $('#chat-log').append('<div>' + data.message + '</div>');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+    });
+
+    // When the "Send" button is clicked
+    $('#send-message-button').click(function() {
+        const message = $('#message-input').val();
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+    });
+
+    // When the "Ban" button is clicked
+    $('#ban-user-button').click(function() {
+        const usernameToBan = $('#ban-username-input').val();
+        chatSocket.send(JSON.stringify({
+            'action': 'ban_user',
+            'username': usernameToBan
+        }));
+    });
+
+    // Когда кнопка "Exit Chat" нажата
+    $('#exit-chat-button').click(function() {
+        if (chatSocket) {
+            chatSocket.close();
+            $('#chat-log').append('<div>You exited the chat.</div>');
+        }
+    });
+
+</script>
+
+</body>
+</html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>WebSocket Chat</title>-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<h2>Enter Chat Room:</h2>-->
+<!--<input type="text" id="room-name-input" placeholder="Enter chat room name" />-->
+<!--<button id="room-name-submit">Enter</button>-->
+
+<!--<h2>Chat Room:</h2>-->
+<!--<div id="chat-log"></div>-->
+<!--<input type="text" id="message-input" placeholder="Enter message" />-->
+<!--<button id="send-message-button">Send</button>-->
+
+<!--<h2>Ban User:</h2>-->
+<!--<input type="text" id="ban-username-input" placeholder="Enter username to ban" />-->
+<!--<button id="ban-user-button">Ban</button>-->
+
+<!--<script>-->
+<!--    let chatSocket;-->
+
+<!--    // When the "Enter" button is clicked-->
+<!--    $('#room-name-submit').click(function() {-->
+<!--        const roomName = $('#room-name-input').val();-->
+
+<!--        // Check if a WebSocket connection already exists-->
+<!--        if (chatSocket) {-->
+<!--            chatSocket.close();-->
+<!--        }-->
+
+<!--        // Create a new WebSocket connection-->
+<!--        chatSocket = new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`);-->
+
+<!--        chatSocket.onmessage = function(e) {-->
+<!--            const data = JSON.parse(e.data);-->
+<!--            $('#chat-log').append('<div>' + data.message + '</div>');-->
+<!--        };-->
+
+<!--        chatSocket.onclose = function(e) {-->
+<!--            console.error('Chat socket closed unexpectedly');-->
+<!--        };-->
+<!--    });-->
+
+<!--    // When the "Send" button is clicked-->
+<!--    $('#send-message-button').click(function() {-->
+<!--        const message = $('#message-input').val();-->
+<!--        chatSocket.send(JSON.stringify({-->
+<!--            'message': message-->
+<!--        }));-->
+<!--    });-->
+
+<!--    // When the "Ban" button is clicked-->
+<!--    $('#ban-user-button').click(function() {-->
+<!--        const usernameToBan = $('#ban-username-input').val();-->
+<!--        chatSocket.send(JSON.stringify({-->
+<!--            'action': 'ban_user',-->
+<!--            'username': usernameToBan-->
+<!--        }));-->
+<!--    });-->
+
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>WebSocket Chat</title>-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<h2>Enter Chat Room:</h2>-->
+<!--<input type="text" id="room-name-input" placeholder="Enter chat room name" />-->
+<!--<button id="room-name-submit">Enter</button>-->
+
+<!--<h2>Chat Room:</h2>-->
+<!--<div id="chat-log"></div>-->
+<!--<input type="text" id="message-input" />-->
+<!--<button id="send-message-button">Send</button>-->
+
+<!--<script>-->
+<!--    let chatSocket;-->
+
+<!--    // When the "Enter" button is clicked-->
+<!--    $('#room-name-submit').click(function() {-->
+<!--        const roomName = $('#room-name-input').val();-->
+
+<!--        // Check if a WebSocket connection already exists-->
+<!--        if (chatSocket) {-->
+<!--            chatSocket.close();-->
+<!--        }-->
+
+<!--        // Create a new WebSocket connection-->
+<!--        chatSocket = new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`);-->
+
+<!--        chatSocket.onmessage = function(e) {-->
+<!--            const data = JSON.parse(e.data);-->
+<!--            $('#chat-log').append('<div>' + data.message + '</div>');-->
+<!--        };-->
+
+<!--        chatSocket.onclose = function(e) {-->
+<!--            console.error('Chat socket closed unexpectedly');-->
+<!--        };-->
+<!--    });-->
+
+<!--    // When the "Send" button is clicked-->
+<!--    $('#send-message-button').click(function() {-->
+<!--        const message = $('#message-input').val();-->
+<!--        chatSocket.send(JSON.stringify({-->
+<!--            'message': message-->
+<!--        }));-->
+<!--    });-->
+
+
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
